@@ -20,12 +20,15 @@ cnn = snowflake.connector.connect(
 
 
 def get_data_from_snowflake():
+    cs = cnn.cursor()
+
     try:
-        query = "SELECT * FROM PRODUCT_VIEWS_AND_PURCHASES LIMIT 5"
-        return pd.read_sql(query, cnn)
-    except Exception as e:
-        print(e)
+        cs.execute("SELECT * FROM PRODUCT_VIEWS_AND_PURCHASES LIMIT 5")
+        rows = cs.fetchall()
+        df = pd.DataFrame(rows, columns=[col[0] for col in cs.description])
+        return df
     finally:
+        cs.close()
         cnn.close()
 
 
