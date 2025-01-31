@@ -1,21 +1,17 @@
 import pandas as pd
 import streamlit as st
 import plotly.express as px
-import os
-from dotenv import load_dotenv
 import snowflake.connector
-
-load_dotenv(".env.local")
 
 st.set_page_config(layout="wide")
 
 cnn = snowflake.connector.connect(
-    user=os.environ.get("SNOWFLAKE_USER"),
-    password=os.environ.get("SNOWFLAKE_PASSWORD"),
-    account=os.environ.get("SNOWFLAKE_ACCOUNT"),
-    warehouse=os.environ.get("SNOWFLAKE_WAREHOUSE"),
-    database=os.environ.get("SNOWFLAKE_DATABASE"),
-    schema=os.environ.get("SNOWFLAKE_SCHEMA"),
+    user=st.secrets["SNOWFLAKE_USER"],
+    password=st.secrets["SNOWFLAKE_PASSWORD"],
+    account=st.secrets["SNOWFLAKE_ACCOUNT"],
+    warehouse=st.secrets["SNOWFLAKE_WAREHOUSE"],
+    database=st.secrets["SNOWFLAKE_DATABASE"],
+    schema=st.secrets["SNOWFLAKE_SCHEMA"],
 )
 
 
