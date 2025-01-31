@@ -1,8 +1,32 @@
 import pandas as pd
 import streamlit as st
 import plotly.express as px
+import os
+from dotenv import load_dotenv
+import snowflake.connector
+
+load_dotenv(".env.local")
 
 st.set_page_config(layout="wide")
+
+cnn = snowflake.connector.connect(
+    user=os.environ.get("SNOWFLAKE_USER"),
+    password=os.environ.get("SNOWFLAKE_PASSWORD"),
+    account=os.environ.get("SNOWFLAKE_ACCOUNT"),
+    warehouse=os.environ.get("SNOWFLAKE_WAREHOUSE"),
+    database=os.environ.get("SNOWFLAKE_DATABASE"),
+    schema=os.environ.get("SNOWFLAKE_SCHEMA"),
+)
+
+
+def get_data_from_snowflake():
+    try:
+        query = "SELECT * FROM PRODUCT_VIEWS_AND_PURCHASES LIMIT 5"
+        return pd.read_sql(query, cnn)
+    except Exception as e:
+        print(e)
+    finally:
+        cnn.close()
 
 
 @st.cache_data
@@ -15,6 +39,7 @@ def load_data():
 
 
 data = load_data()
+test_snowflake = get_data_from_snowflake()
 
 if data is not None:
     st.title("Retail Data")
@@ -191,6 +216,10 @@ if data is not None:
         color="#B7FFFA",
     )
 
+    if test_snowflake is not None:
+        st.title("Snowflake Data")
+        st.subheader("Data Preview")
+        st.write(test_snowflake)
 
 else:
     st.write("No data to display")
